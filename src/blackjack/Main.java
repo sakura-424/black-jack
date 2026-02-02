@@ -31,10 +31,10 @@ public class Main {
 			playerPoint = playPlayerTurn(deck, playerHand, sc, playerPoint);
 			
 			// プレイヤーがバーストしていない場合
-			// ディーラーのターン
 			if (playerPoint <= 21) {
 				System.out.println("ディーラーの手札：" + dealerHand);
 				System.out.println("ディーラーの点数：" + dealerPoint  + "点");
+				// ディーラーのターン
 				dealerPoint = playDealerTurn(deck, dealerHand, playerPoint, dealerPoint);
 			}
 			// 結果の表示
@@ -81,6 +81,7 @@ public class Main {
 	// プレイヤーのターン（もう一枚引くか選択し、一枚引く度に手札と点数を開示）
 	public static int playPlayerTurn(Deck deck, ArrayList<Card> hand, Scanner sc, int playerPoint) {
 		String answer = "y";
+		// プレイヤーがもう１枚引く選択をし、プレイヤーがバーストしていない場合
 		while (answer.equals("y") && playerPoint <= 21) {
 			System.out.println("もう一枚引きますか？ y or n(yes or no)");
 			answer = sc.next();
@@ -88,7 +89,7 @@ public class Main {
 				hand.add(deck.drawCard());
 				playerPoint = calcScore(hand);
 				System.out.println("あなたの手札：" + hand);
-				System.out.println("現在の点数：" + playerPoint  + "点");
+				System.out.println("あなたの点数：" + playerPoint  + "点");
 				if (playerPoint > 21) {
 					System.out.println("バーストしました......");
 				}
@@ -99,22 +100,21 @@ public class Main {
 	
 	// ディーラーのターン（ディーラーが17点以上になるようにカードを引き、手札と点数を開示）
 	public static int playDealerTurn(Deck deck, ArrayList<Card> hand, int playerPoint, int dealerPoint) {
-		if (playerPoint <= 21) {
-			// ディーラーが17点以上になるようにカードを引く
-			while (dealerPoint < 17)
-			{
-				System.out.println("ディーラーがカードを引きました。");
-				hand.add(deck.drawCard());
-				dealerPoint = calcScore(hand);
-				System.out.println("ディーラーの手札：" + hand);
-				System.out.println("ディーラーの点数：" + dealerPoint + "点");
-			}
+		// ディーラーが17点以上になるようにカードを引く
+		while (dealerPoint < 17)
+		{
+			System.out.println("ディーラーがカードを引きました。");
+			hand.add(deck.drawCard());
+			dealerPoint = calcScore(hand);
+			System.out.println("ディーラーの手札：" + hand);
+			System.out.println("ディーラーの点数：" + dealerPoint + "点");
 		}
 		return dealerPoint;
 	}
 	
 	// ゲームの結果を判定し表示する
 	public static void printResult(int playerPoint, int dealerPoint) {
+		// プレイヤーがバーストしていない場合
 		if (playerPoint <= 21) {
 			if (dealerPoint > 21) {
 				System.out.println("ディーラーがバーストしました。あなたの勝ちです。");
@@ -126,7 +126,6 @@ public class Main {
 				System.out.println("あなたの負けです。");
 			}
 		} else {
-			// プレイヤーがバーストした場合
 			System.out.println("あなたの負けです。");
 		}
 	}
