@@ -2,21 +2,28 @@ package blackjack;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Deck {
-	private ArrayList<IntCard> cardList;
+	private List<Card> cards;
 
 	public Deck() {
-		cardList = new ArrayList<>();
-		for (int i = 0; i < 52; i++) {
-			cardList.add(new IntCard(i));
+		cards = new ArrayList<>();
+		
+		String[] suits = {"スペード", "ハート", "クラブ", "ダイヤ"};
+		// マーク4種 * 数字13で回して山札を作る
+		for (String suit : suits) {
+			for (int number = 1; number <= 13; number++) {
+				Card c = new Card(suit, number);
+				cards.add(c);
+			}
 		}
-		Collections.shuffle(cardList); // 作成したカードをシャッフル
+		Collections.shuffle(cards); //カードをシャッフル
 	}
 	
 	 // 山札からカードを削除し、削除したカードの値を返すことでカードを引く
-	public IntCard drawCard() {
-		return cardList.remove(0);
+	public Card drawCard() {
+		return cards.remove(0);
 	}
 	
 }
