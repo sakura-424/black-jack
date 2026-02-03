@@ -10,7 +10,7 @@ public class Card {
 	}
 	
 	// 点数計算 10, J, Q, Kは全て10点として換算
-	public int getPoint() {
+	public int convertNumber() {
 		if (number > 10) {
 			return 10;
 		}

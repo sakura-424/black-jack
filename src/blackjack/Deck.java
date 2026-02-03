@@ -21,8 +21,8 @@ public class Deck {
 		Collections.shuffle(cards); //カードをシャッフル
 	}
 	
-	 // 山札からカードを削除し、削除したカードの値を返すことでカードを引く
-	public Card drawCard() {
+	 // 山札からカードを提供する
+	public Card provideCard() {
 		return cards.remove(0);
 	}
 	
