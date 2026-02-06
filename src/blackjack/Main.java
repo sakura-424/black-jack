@@ -10,7 +10,7 @@ public class Main {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		
-		boolean continueGame = true;
+		boolean continueGame = true; // ゲーム継続フラグ
 		// ゲーム継続中のループ
 		while (continueGame) {
 			System.out.println("-----  Game Start  -----");
@@ -170,6 +170,7 @@ public class Main {
 		return playerPoint;
 	}
 	
+	// ディーラーのターン
 	public static int playDealerTurn(int dealerPoint, ArrayList<int[]> dealerHand, ArrayList<int[]> deck) {
 		while (dealerPoint < 17)
 		{
