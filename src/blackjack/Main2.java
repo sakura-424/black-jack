@@ -6,7 +6,9 @@ import java.util.Scanner;
 
 /* ブラックジャックゲーム */
 /* クラス使わないver */
-public class Main {
+public class Main2 {
+	public static final int BLACKJACK_NUM = 21;
+	public static final int DEALER_STAND = 17;
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
@@ -27,25 +29,29 @@ public class Main {
 			int dealerPoint = getSum(dealerHand);
 		
 			//　場の状況を表示
-			System.out.println("【あなたの手札】");
+			System.out.println("【プレイヤーの手札】");
 			for (int[] card : playerHand) {
 				printCard(card);
 			}
-			System.out.println("合計点数：" + playerPoint + "点");
-			System.out.println("【ディーラーの手札の内1枚】");
+			System.out.println("プレイヤーの点数：" + playerPoint + "点");
+			System.out.println("【ディーラーの手札】");
 			printCard(dealerHand.get(0));
+			System.out.println("???の???");
 		
 			// プレイヤーのターン（もう一枚引くかどうか選択し計算）
 			playerPoint = playPlayerTurn(playerPoint, sc, playerHand, deck);
-			// プレイヤーがバーストしていないかチェック
-			if (playerPoint < 21) {
-				// ディーラーのターン
-				dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
+			// プレイヤーがバーストしている場合はディーラーのターンをスキップ
+			if (playerPoint < BLACKJACK_NUM) {
+				// ディーラーがスタンド状態か判定
+				if (dealerPoint < DEALER_STAND) {
+					// ディーラーのターン
+					dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
+				}
 			}
 			// 結果の表示
 			printResult(playerPoint, dealerPoint);
 			
-			System.out.println("もう一枚プレイしますか？ y or n(yes or no)");
+			System.out.println("もう一回プレイしますか？ y or n(yes or no)");
 			String answer = sc.next();
 			if ("n".equals(answer)) {
 				continueGame = false;
@@ -57,10 +63,15 @@ public class Main {
 	
 	// 山札を作る
 	public static ArrayList<int[]> createDeck() {
+		final int RANK_MAX = 13; // トランプの数
+		final int SUIT_TYPE = 4; // スートの種類の数
+		
+		// int[]の配列が入ったリストを作成 
 		ArrayList<int[]> deck = new ArrayList<>();
 		// ダイヤ、ハート、クラブ、スペードの4種 * 13枚
-		for (int suit = 0; suit < 4; suit++) {
-			for (int number = 1; number <= 13; number++) {
+		for (int suit = 0; suit < SUIT_TYPE; suit++) {
+			for (int number = 1; number <= RANK_MAX; number++) {
+				// カードは2つの数字を持つ配列 {スート, 数字}
 				int[] card = {suit, number};
 				deck.add(card);
 			}
@@ -80,22 +91,29 @@ public class Main {
 	// カードを受け取り、点数を返す
 	public static int toPoint(int[] card) {
 		int point = card[1];
-		
+		// J, Q, Kは全て10点
 		if (point > 10) {
 			point = 10; 
 		}
 		return point;
 	}
 	
+	// ヒット(カードを一枚引く)
+	public static ArrayList<int[]> hit(ArrayList<int[]> deck, ArrayList<int[]> hand) {
+		hand.add(deck.remove(0));
+		return hand;
+	}
+	
 	// 合計点数を計算する
 	public static int getSum(ArrayList<int[]> hand) {
 		int sum = 0;
 		boolean hasAce = false;
+		final int ACE = 1;
 		
 		for (int[] card : hand) {
 			int point = toPoint(card);
 			sum += point;
-			if (point == 1) {
+			if (point == ACE) {
 				hasAce = true;
 			}
 		}
@@ -109,14 +127,18 @@ public class Main {
 	// numberを表示用に変換する
 	public static String toStringNumber(int[] card) {
 		String strNumber = null;
+		final int ACE = 1; 
+		final int JACK = 11;
+		final int QUEEN = 12;
+		final int KING = 13;
 		
-		if (card[1] == 1) {
+		if (card[1] == ACE) {
 			strNumber = "A";
-		} else if (card[1] == 11) {
+		} else if (card[1] == JACK) {
 			strNumber = "J"; 
-		} else if (card[1] == 12) {
+		} else if (card[1] == QUEEN) {
 			strNumber = "Q";
-		} else if (card[1] == 13) {
+		} else if (card[1] == KING) {
 			strNumber = "K";
 		} else {
 			strNumber = Integer.toString(card[1]);
@@ -127,14 +149,18 @@ public class Main {
 	// suitを表示用に変換する
 	public static String toStringSuit(int[] card) {
 		String strSuit = null;
+		final int SPADE = 0; 
+		final int CLUB = 1;
+		final int DIAMOND = 2;
+		final int HEART = 3;
 		
-		if (card[0] == 0) {
+		if (card[0] == SPADE) {
 			strSuit = "スペード";
-		} else if (card[0] == 1) {
+		} else if (card[0] == CLUB) {
 			strSuit = "クラブ"; 
-		} else if (card[0] == 2) {
+		} else if (card[0] == DIAMOND) {
 			strSuit = "ダイヤ";
-		} else if (card[0] == 3) {
+		} else if (card[0] == HEART) {
 			strSuit = "ハート";
 		}
 		return strSuit;
@@ -149,24 +175,24 @@ public class Main {
 	
 	// プレイヤーのターン
 	public static int playPlayerTurn(int playerPoint, Scanner sc, ArrayList<int[]> playerHand, ArrayList<int[]> deck) {
-		boolean moreDraw = true;
-		while (moreDraw && playerPoint <= 21) {
+		boolean continuePlayerTurn = true;
+		while (continuePlayerTurn) {
 			System.out.println("もう一枚引きますか？ y or n(yes or no)");
 			String answer = sc.next();
-			if ("n".equals(answer)) {
-				moreDraw = false;
-			}
-			if (moreDraw) {
-				playerHand.add(deck.remove(0));
+			if ("y".equals(answer)) {
+				playerHand = hit(deck, playerHand);
 				playerPoint = getSum(playerHand);
-				System.out.println("【あなたの手札】");
+				System.out.println("【プレイヤーの手札】");
 				for (int[] card : playerHand) {
 					printCard(card);
 				}
-				System.out.println("合計点数：" + playerPoint + "点");
-				if (playerPoint > 21) {
+				System.out.println("プレイヤーの点数：" + playerPoint + "点");
+				if (playerPoint > BLACKJACK_NUM) {
+					continuePlayerTurn = false;
 					System.out.println("バーストしました......");
 				}
+			} else if ("n".equals(answer)) {
+				continuePlayerTurn = false;
 			}
 		}
 		return playerPoint;
@@ -174,16 +200,21 @@ public class Main {
 	
 	// ディーラーのターン
 	public static int playDealerTurn(int dealerPoint, ArrayList<int[]> dealerHand, ArrayList<int[]> deck) {
-		while (dealerPoint < 17)
+		boolean continueDealerTurn = true;
+		while (continueDealerTurn)
 		{
 			System.out.println("ディーラーがカードを引きました。");
-			dealerHand.add(deck.remove(0));
+			dealerHand = hit(deck, dealerHand);
 			dealerPoint = getSum(dealerHand);
 			System.out.println("【ディーラーの手札】");
 			for (int[] card : dealerHand) {
 				printCard(card);
 			}
-			System.out.println("合計点数：" + dealerPoint + "点");
+			System.out.println("ディーラーの点数：" + dealerPoint + "点");
+			// ディーラーがスタンド状態か判定
+			if (dealerPoint >= DEALER_STAND) {
+				continueDealerTurn = false;
+			}
 		}
 		return dealerPoint;
 	}
@@ -191,11 +222,11 @@ public class Main {
 	// ゲームの結果を判定し表示する
 	public static void printResult(int playerPoint, int dealerPoint) {
 		// プレイヤーがバーストしていない場合
-		if (playerPoint <= 21) {
+		if (playerPoint <= BLACKJACK_NUM) {
 			// 点数開示
-			System.out.println("あなたの点数：" + playerPoint + "点");
+			System.out.println("プレイヤーの点数：" + playerPoint + "点");
 			System.out.println("ディーラーの点数：" + dealerPoint + "点");
-			if (dealerPoint > 21) {
+			if (dealerPoint > BLACKJACK_NUM) {
 				System.out.println("ディーラーがバーストしました。あなたの勝ちです。");
 			} else if (playerPoint > dealerPoint) {
 				System.out.println("あなたの勝ちです。");
