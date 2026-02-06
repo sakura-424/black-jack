@@ -17,7 +17,7 @@ public class Main2 {
 		// ゲーム継続中のループ
 		while (continueGame) {
 			System.out.println("-----  Game Start  -----");
-			// 山札を作る
+			// 山札を作る(int[]の配列が入ったリストを作成し、2つの数字を持つ配列 {スート, 数字}のカードを格納)
 			ArrayList<int[]> deck = createDeck();	
 			// プレイヤー側の手札を作成
 			ArrayList<int[]> playerHand = createHand(deck);
