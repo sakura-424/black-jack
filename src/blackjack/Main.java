@@ -36,8 +36,11 @@ public class Main {
 		
 			// プレイヤーのターン（もう一枚引くかどうか選択し計算）
 			playerPoint = playPlayerTurn(playerPoint, sc, playerHand, deck);
-			// ディーラーのターン
-			dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
+			// プレイヤーがバーストしていないかチェック
+			if (playerPoint < 21) {
+				// ディーラーのターン
+				dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
+			}
 			// 結果の表示
 			printResult(playerPoint, dealerPoint);
 			
@@ -186,6 +189,9 @@ public class Main {
 	public static void printResult(int playerPoint, int dealerPoint) {
 		// プレイヤーがバーストしていない場合
 		if (playerPoint <= 21) {
+			// 点数開示
+			System.out.println("あなたの点数：" + playerPoint + "点");
+			System.out.println("ディーラーの点数：" + dealerPoint + "点");
 			if (dealerPoint > 21) {
 				System.out.println("ディーラーがバーストしました。あなたの勝ちです。");
 			} else if (playerPoint > dealerPoint) {
