@@ -9,37 +9,44 @@ public class Main {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		String answer = "y"; // プレイヤーの回答を保存
 		
-		System.out.println("-----  Game Start  -----");
-		// 山札を作る
-		ArrayList<int[]> deck = createDeck();	
-		// プレイヤー側の手札を作成
-		ArrayList<int[]> playerHand = createHand(deck);
-		// プレイヤーの点数を計算
-		int playerPoint = getSum(playerHand);
-		// ディーラー側の手札を作成
-		ArrayList<int[]> dealerHand = createHand(deck);
-		// ディーラーの点数を計算
-		int dealerPoint = getSum(dealerHand);
+		boolean continueGame = true;
+		// ゲーム継続中のループ
+		while (continueGame) {
+			System.out.println("-----  Game Start  -----");
+			// 山札を作る
+			ArrayList<int[]> deck = createDeck();	
+			// プレイヤー側の手札を作成
+			ArrayList<int[]> playerHand = createHand(deck);
+			// プレイヤーの点数を計算
+			int playerPoint = getSum(playerHand);
+			// ディーラー側の手札を作成
+			ArrayList<int[]> dealerHand = createHand(deck);
+			// ディーラーの点数を計算
+			int dealerPoint = getSum(dealerHand);
 		
-		//　場の状況を表示
-		System.out.println("【あなたの手札】");
-		for (int[] card : playerHand) {
-			printCard(card);
+			//　場の状況を表示
+			System.out.println("【あなたの手札】");
+			for (int[] card : playerHand) {
+				printCard(card);
+			}
+			System.out.println("合計点数：" + playerPoint + "点");
+			System.out.println("【ディーラーの手札の内1枚】");
+			printCard(dealerHand.get(0));
+		
+			// プレイヤーのターン（もう一枚引くかどうか選択し計算）
+			playerPoint = playPlayerTurn(playerPoint, sc, playerHand, deck);
+			// ディーラーのターン
+			dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
+			// 結果の表示
+			printResult(playerPoint, dealerPoint);
+			
+			System.out.println("もう一枚プレイしますか？ y or n(yes or no)");
+			String answer = sc.next();
+			if ("n".equals(answer)) {
+				continueGame = false;
+			}
 		}
-		System.out.println("合計点数：" + playerPoint + "点");
-		System.out.println("【ディーラーの手札の内1枚】");
-		printCard(dealerHand.get(0));
-		System.out.println("合計点数：" + dealerPoint + "点");
-		
-		// プレイヤーのターン（もう一枚引くかどうか選択し計算）
-		playerPoint = playPlayerTurn(playerPoint, sc, playerHand, deck);
-		// ディーラーのターン
-		dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
-		// 結果の表示
-		printResult(playerPoint, dealerPoint);
-		
 		sc.close(); 
 		System.out.println("-----  Game End  -----");
 	}
