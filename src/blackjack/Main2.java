@@ -27,35 +27,18 @@ public class Main2 {
 			int playerPoint = getSum(playerHand);
 			// ディーラーの点数を計算
 			int dealerPoint = getSum(dealerHand);
-		
+
 			//　場の状況を表示
-			System.out.println("【プレイヤーの手札】");
-			for (int[] card : playerHand) {
-				printCard(card);
-			}
-			System.out.println("プレイヤーの点数：" + playerPoint + "点");
-			System.out.println("【ディーラーの手札】");
-			printCard(dealerHand.get(0));
-			System.out.println("???の???");
+			showGameState(playerHand, dealerHand, playerPoint);
 		
-			// プレイヤーのターン（もう一枚引くかどうか選択し計算）
+			// プレイヤーのターン
 			playerPoint = playPlayerTurn(playerPoint, sc, playerHand, deck);
-			// プレイヤーがバーストしている場合はディーラーのターンをスキップ
-			if (playerPoint < BLACKJACK_NUM) {
-				// ディーラーがスタンド状態か判定
-				if (dealerPoint < DEALER_STAND) {
-					// ディーラーのターン
-					dealerPoint = playDealerTurn(dealerPoint, dealerHand, deck);
-				}
-			}
-			// 結果の表示
+			// ディーラーのターン
+			dealerPoint = playDealerTurn(dealerPoint, playerPoint, dealerHand, deck);
+			// 勝敗の表示
 			printResult(playerPoint, dealerPoint);
-			
-			System.out.println("もう一回プレイしますか？ y or n(yes or no)");
-			String answer = sc.next();
-			if ("n".equals(answer)) {
-				continueGame = false;
-			}
+			// ゲームを続けるか選択
+			continueGame = isNextGame(sc, continueGame);
 		}
 		sc.close(); 
 		System.out.println("-----  Game End  -----");
@@ -96,6 +79,19 @@ public class Main2 {
 			point = 10; 
 		}
 		return point;
+	}
+	
+	// 場の状況を表示
+	public static void showGameState(ArrayList<int[]> playerHand, ArrayList<int[]> dealerHand, int playerPoint) {
+		System.out.println("【プレイヤーの手札】");
+		for (int[] card : playerHand) {
+			printCard(card);
+		}
+		System.out.println("プレイヤーの点数：" + playerPoint + "点");
+		// ディーラーは手札を一枚だけ見せる
+		System.out.println("【ディーラーの手札】");
+		printCard(dealerHand.get(0));
+		System.out.println("???の???");
 	}
 	
 	// ヒット(カードを一枚引く)
@@ -199,8 +195,12 @@ public class Main2 {
 	}
 	
 	// ディーラーのターン
-	public static int playDealerTurn(int dealerPoint, ArrayList<int[]> dealerHand, ArrayList<int[]> deck) {
+	public static int playDealerTurn(int dealerPoint, int playerPoint, ArrayList<int[]> dealerHand, ArrayList<int[]> deck) {
 		boolean continueDealerTurn = true;
+		// ディーラーがスタンド状態、またはプレイヤーがバーストしていた場合ディーラーのターン終了
+		if (dealerPoint >= DEALER_STAND || playerPoint > BLACKJACK_NUM) {
+			continueDealerTurn = false;
+		}
 		while (continueDealerTurn)
 		{
 			System.out.println("ディーラーがカードを引きました。");
@@ -238,5 +238,23 @@ public class Main2 {
 		} else {
 			System.out.println("あなたの負けです。");
 		}
+	}
+	
+	// 次のゲームに進むか判定
+	public static boolean isNextGame(Scanner sc, boolean continueGame) {
+		boolean isValidInput = false; // 正しい入力がされたかどうかのフラグ
+		while (!isValidInput) {
+			System.out.println("もう一回プレイしますか？ y or n(yes or no)");
+			String answer = sc.next();
+			if ("y".equals(answer)) {
+				isValidInput = true;
+			} else if ("n".equals(answer)) {
+				isValidInput = true;
+				continueGame = false;
+			} else {
+				System.out.println("無効な入力です。y か n を入力してください。");
+			}
+		}
+		return continueGame;
 	}
 }
